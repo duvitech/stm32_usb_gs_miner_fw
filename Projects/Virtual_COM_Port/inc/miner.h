@@ -4,10 +4,10 @@
 */
 #define USE_USB_AS_HOST_IF
 //#define USE_UART1_AS_HOST_IF
- #define  FW_VER_HH 0x01
- #define  FW_VER_HL 0x14
- #define  FW_VER_LH 0x01
- #define  FW_VER_LL 0x13
+// #define  FW_VER_HH 0x01
+// #define  FW_VER_HL 0x14
+// #define  FW_VER_LH 0x02
+// #define  FW_VER_LL 0x16
  
 #define DISPATCH_CMD_FRAME_INTERVAL 6
 #define CMD_WAIT_TIME 1200 /* us */
@@ -17,7 +17,7 @@
 #define LTC_COM2 EVAL_COM5
 
 #define FIXED_INIT_NONCE
-#define GC3355_NUM 10
+#define GC3355_NUM 5
 #define GC3355_NUM_MAX 16
 #define HEADER_55 0x55
 #define HEADER_AA 0xaa
@@ -33,8 +33,8 @@
 #define 	GET_FWVER  0x90909090
  #define  FW_VER_HH 0x01
  #define  FW_VER_HL 0x14
- #define  FW_VER_LH 0x01
- #define  FW_VER_LL 0x13
+ #define  FW_VER_LH 0x02
+ #define  FW_VER_LL 0x18
 #define 	SET_BRATE  0xB0B0B0B0
 #define 	GET_FREE_FIFO  0xA0A0A0A0
 #define 	EN_DIS_FIFO  0xD0D0D0D0

@@ -166,7 +166,7 @@
             <DriverSelection>4099</DriverSelection>
           </Flash1>
           <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
         </Utilities>
         <TargetArmAds>
@@ -348,7 +348,7 @@
             <uSurpInc>0</uSurpInc>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER, STM32F10X_MD, USE_STM3210B_EVAL, UART1_DEBUG_PRINT</Define>
+              <Define>USE_STDPERIPH_DRIVER, STM32F10X_MD, USE_STM3210B_EVAL</Define>
               <Undefine></Undefine>
               <IncludePath>..\inc;..\..\..\Libraries\CMSIS\Device\ST\STM32F10x\Include;..\..\..\Libraries\STM32_USB-FS-Device_Driver\inc;..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\..\..\Utilities\STM32_EVAL;..\..\..\Utilities\STM32_EVAL\Common;..\..\..\Utilities\STM32_EVAL\STM3210B_EVAL</IncludePath>
             </VariousControls>
@@ -1533,7 +1533,7 @@
             <uSurpInc>0</uSurpInc>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER, STM32F10X_HD, USE_STM3210E_EVAL, UART1_DEBUG_PRINT</Define>
+              <Define>USE_STDPERIPH_DRIVER, STM32F10X_HD, USE_STM3210E_EVAL</Define>
               <Undefine></Undefine>
               <IncludePath>..\inc;..\..\..\Libraries\CMSIS\Device\ST\STM32F10x\Include;..\..\..\Libraries\STM32_USB-FS-Device_Driver\inc;..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc;..\..\..\Utilities\STM32_EVAL;..\..\..\Utilities\STM32_EVAL\Common;..\..\..\Utilities\STM32_EVAL\STM3210E_EVAL</IncludePath>
             </VariousControls>

@@ -1,0 +1,10 @@
+COM_0x800A000.bin
+VirtualCOMPort_STM3210B-EVAL.dep
+VirtualCOMPort_STM3210E-EVAL.dep
+JLinkLog.txt
+JLinkSettings.ini
+VirtualCOMPort.uvgui*
+VirtualCOMPort_uvopt.bak
+VirtualCOMPort_uvproj.bak
+STM3210B-EVAL/
+STM3210E-EVAL/

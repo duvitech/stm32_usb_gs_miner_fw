@@ -94,7 +94,7 @@ int main(void)
         if(timer_count > 100) {
 		timer_count = 0;
 		//PR_DEBUG("GPIOB8 = %d\n",GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_8));
-		//swz0208-led1_revert();
+		led1_revert();
 		//PR_DEBUG("%02X\n",get_next_n_out(&usb_trans_buffer,152));
 		//PR_DEBUG("has cmd length = %d\n",trans_buffer_has_cmd(&usb_trans_buffer));
         }

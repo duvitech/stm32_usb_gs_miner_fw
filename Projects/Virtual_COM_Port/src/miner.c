@@ -61,8 +61,8 @@ u8 chip_id_remap[16][2] = {
 	{0,0},
 	{1,1},
 	{2,2},
-	{3,3},
-	{4,4},
+	{3,4},
+	{4,5},
 	{5,-1},
 	{6,-1},
 	{7,-1},
@@ -71,13 +71,13 @@ u8 chip_id_remap[16][2] = {
 	{10,2},
 	{11,3},
 	{12,4},
-	{13,-1},
+	{13,5},
 	{14,-1},
 	{15,-1},
 };
 #endif
 
-#define MINER_CMD_DEBUG
+//#define MINER_CMD_DEBUG
 #ifdef MINER_CMD_DEBUG
 #define DBG_CMD(string,buf,len) \
 		print_cmd_asc(string, buf, len)
@@ -490,7 +490,7 @@ static void process_mcu_cmd(u8 *cmd, u32 cmd_len)
 			PR_DEBUG("btc reset\n");
 			if(mcu_cmd.reg_value==0)
 			{
-				//reset_btc_hw();
+				reset_btc_hw();
 				reset_trans_buffer(&uart_trans_buffer[COM2]);
 				#if defined (USE_STM3210E_EVAL)				
 				reset_trans_buffer(&uart_trans_buffer[COM4]);
@@ -498,7 +498,7 @@ static void process_mcu_cmd(u8 *cmd, u32 cmd_len)
 			}
 			else if(mcu_cmd.reg_value==1)
 			{
-				//reset_ltc_hw();
+				reset_ltc_hw();
 				reset_trans_buffer(&uart_trans_buffer[COM3]);
 				#if defined (USE_STM3210E_EVAL)
 				reset_trans_buffer(&uart_trans_buffer[COM5]);

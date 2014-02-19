@@ -76,12 +76,12 @@ void Reset_GC3355(void)
 
 	 RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB , ENABLE);  //RCC_APB2Periph_AFIO
        //GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_9;                 //选择引脚5
-       GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1;//swz+
+       GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_9;                 //选择引脚5
        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; //输出频率最大50MHz
        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; //带上拉电阻输出
        GPIO_Init(GPIOB,&GPIO_InitStructure);
 //	GPIO_SetBits(GPIOB,BTC_BUSY);
-	//swz-GPIO_SetBits(GPIOB,GPIO_Pin_9); 
+	GPIO_SetBits(GPIOB,GPIO_Pin_9); 
 }
 
 void reset_gc3355_chip(void)
@@ -110,15 +110,6 @@ void gpio_init(void)
 	
 	reset_btc_hw();
 	reset_ltc_hw();
-}
-
-u8 is_btc_busy(void)
-{
-#ifdef USE_STM3210E_EVAL
-	return GPIO_ReadOutputDataBit(GPIOB,GPIO_Pin_9);
-#else
-	return GPIO_ReadOutputDataBit(GPIOB,GPIO_Pin_8);
-#endif
 }
 
 void reset_btc_hw(void)
