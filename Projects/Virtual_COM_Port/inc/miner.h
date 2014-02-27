@@ -16,8 +16,13 @@
 #define LTC_COM1 EVAL_COM3
 #define LTC_COM2 EVAL_COM5
 
-#define FIXED_INIT_NONCE
+//#define FIXED_INIT_NONCE
+//#define MULTI_TASK_MODE
+#if defined(USE_STM3210E_EVAL)
+#define GC3355_NUM 10
+#else
 #define GC3355_NUM 5
+#endif
 #define GC3355_NUM_MAX 16
 #define HEADER_55 0x55
 #define HEADER_AA 0xaa
@@ -34,7 +39,7 @@
  #define  FW_VER_HH 0x01
  #define  FW_VER_HL 0x14
  #define  FW_VER_LH 0x02
- #define  FW_VER_LL 0x18
+ #define  FW_VER_LL 0x21
 #define 	SET_BRATE  0xB0B0B0B0
 #define 	GET_FREE_FIFO  0xA0A0A0A0
 #define 	EN_DIS_FIFO  0xD0D0D0D0

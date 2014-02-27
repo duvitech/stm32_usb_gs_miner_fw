@@ -18,8 +18,16 @@ u8 cmd_buffer[CMD_MAX_LENGTH];
 u8 report_buffer[REPORT_MAX_LENGTH];
 u32 Max_Chip_Num = GC3355_NUM;
 u32 btc_task_fifo_mode = 1; //swz0208 default use fifo
+#ifdef MULTI_TASK_MODE
+u8 btc_mod1_start = 0;
+u8 btc_mod2_start = 0;
+#else
 u32 btc_task_fifo_start = 0;
+#endif
 BTC_TASK_CMD btc_task;
+#ifdef MULTI_TASK_MODE
+BTC_TASK_CMD btc_task2;
+#endif
 TASK_FIFO btc_task_fifo = {
 	{0},
 	BTC_TASK_FIFO_LEN + 1,
@@ -34,6 +42,9 @@ TASK_NONCE btc_nonce = {{0x55,0x10,0,0},0,0};
 TASK_NONCE ltc_nonce = {{0x55,0x20,0,0},0,0};
 volatile uint32_t ltc_com_sel = 0;
 volatile u8 btc_send_task=0;
+#ifdef MULTI_TASK_MODE
+volatile u8 btc_send_task2=0;
+#endif
 
 #if 0
 u8 chip_id_remap[16][2] = {
@@ -69,9 +80,9 @@ u8 chip_id_remap[16][2] = {
 	{8,0},
 	{9,1},
 	{10,2},
-	{11,3},
-	{12,4},
-	{13,5},
+	{11,4},
+	{12,5},
+	{13,-1},
 	{14,-1},
 	{15,-1},
 };
@@ -154,7 +165,15 @@ static void report_ltc_nonce(u32 nonce)
 	trans_to_host((u8*)&ltc_nonce,sizeof(ltc_nonce));
 	led0_revert();
 }
-
+#ifdef MULTI_TASK_MODE
+static void report_btc_nonce(BTC_TASK_CMD * task, u32 nonce)
+{
+	btc_nonce.nonce = nonce;
+	btc_nonce.taskid = task->taskid;
+	trans_to_host((u8*)&btc_nonce,sizeof(btc_nonce));
+	led0_revert();
+}
+#else
 static void report_btc_nonce(u32 nonce)
 {
 	btc_nonce.nonce = nonce;
@@ -166,7 +185,7 @@ static void report_btc_nonce(u32 nonce)
 	//	&& get_task_fifo(&btc_task_fifo, &btc_task))
 	//	trans_btc_cmd((u8 *)&btc_task, sizeof(BTC_TASK_CMD) - 4);
 }
-
+#endif
 static int get_chip_remap(u8 sub)
 {
 	int i;
@@ -408,15 +427,25 @@ static void process_btc_cmd(u8 *cmd, u32 cmd_len)
 		
 	else if  (cmd_len == sizeof(BTC_TASK_CMD)) {
 		if (btc_task_fifo_mode == 1) {
+#ifdef MULTI_TASK_MODE
+			if (btc_mod1_start == 0) btc_mod1_start = 1;
+			if (btc_mod2_start == 0) btc_mod2_start = 1;
+#else
 			if (btc_task_fifo_start == 0) {
 				btc_task_fifo_start = 1;
 				memcpy((u8 *)&btc_task, cmd, cmd_len);
 				trans_btc_cmd(cmd, cmd_len - 4);
 			}
+#endif
 			put_task_fifo(&btc_task_fifo, (BTC_TASK_CMD *)cmd);
 		}
 		else {
+#ifdef MULTI_TASK_MODE
+			btc_mod1_start = 0;
+			btc_mod2_start = 0;
+#else
 			btc_task_fifo_start = 0;
+#endif			
 			memcpy((u8 *)&btc_task, cmd, cmd_len);
 			trans_btc_cmd(cmd, cmd_len - 4);			
 		}
@@ -495,6 +524,7 @@ static void process_mcu_cmd(u8 *cmd, u32 cmd_len)
 				#if defined (USE_STM3210E_EVAL)				
 				reset_trans_buffer(&uart_trans_buffer[COM4]);
 				#endif
+				reset_task_fifo(&btc_task_fifo);
 			}
 			else if(mcu_cmd.reg_value==1)
 			{
@@ -642,14 +672,34 @@ void dispatch_host_cmd(void)
 
 void send_btc_task(void)
 {
-	if ((btc_task_fifo_mode == 0)  || (btc_send_task==0)) return;
-
-	btc_send_task = 0;
-	if (get_task_fifo(&btc_task_fifo, &btc_task)) {
+	if (btc_task_fifo_mode == 0) return;
+#ifdef MULTI_TASK_MODE
+	if (btc_mod1_start==1 || btc_send_task==1) {
+		if(get_task_fifo(&btc_task_fifo, &btc_task)) {
 		//led1_revert();
+		btc_send_task = 0;
+		btc_mod1_start == 0;
+		trans_buf_to_uart(BTC_COM1, (u8 *)&btc_task, sizeof(BTC_TASK_CMD) - 4);
+		}
+	}
+	if (btc_mod2_start==1 || btc_send_task2==1) {
+		if(get_task_fifo(&btc_task_fifo, &btc_task2)) {
+		//led1_revert();
+		btc_send_task2 = 0;
+		btc_mod2_start == 0;
+		trans_buf_to_uart(BTC_COM1, (u8 *)&btc_task2, sizeof(BTC_TASK_CMD) - 4);
+		}
+	}	
+#else
+	if (btc_send_task==1) {
+		if(get_task_fifo(&btc_task_fifo, &btc_task)) {
+		//led1_revert();
+		btc_send_task = 0;
 		PR_DEBUG("send btc task\n");
 		trans_btc_cmd((u8 *)&btc_task, sizeof(BTC_TASK_CMD) - 4);
+		}
 	}
+#endif	
 }
 
 static void report_nonce_from_uartrx(int com)
@@ -664,8 +714,15 @@ static void report_nonce_from_uartrx(int com)
 		PR_DEBUG("COM%d",com+1);
 		DBG_CMD(">>>",(u8*)&nonce, 4);
 #if defined(USE_STM3210E_EVAL)
+#ifdef MULTI_TASK_MODE
+		if (COM_USART[com] == BTC_COM1)
+			report_btc_nonce(&btc_task, nonce);
+		else if(COM_USART[com] == BTC_COM2)
+			report_btc_nonce(&btc_task2, nonce);
+#else
 		if (COM_USART[com] == BTC_COM1 || COM_USART[com] == BTC_COM2)
 			report_btc_nonce(nonce);
+#endif		
 		else if (COM_USART[com] == LTC_COM1 || COM_USART[com] == LTC_COM2)
 			report_ltc_nonce(nonce);
 #else

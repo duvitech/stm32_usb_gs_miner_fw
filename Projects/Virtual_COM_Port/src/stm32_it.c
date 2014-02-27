@@ -179,6 +179,9 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
   USB_Istr();
 }
 extern volatile u8 btc_send_task;
+#ifdef MULTI_TASK_MODE
+extern volatile u8 btc_send_task2;
+#endif
 void EXTI9_5_IRQHandler(void)
 {	
 #ifdef USE_STM3210E_EVAL
@@ -188,7 +191,11 @@ void EXTI9_5_IRQHandler(void)
 	EXTI_ClearITPendingBit(RIGHT_BUTTON_EXTI_LINE);
 	//led1_revert();
 	SET_IRQ_FLAG(BTC_IRQ_FLAG);
+#ifdef MULTI_TASK_MODE	
+	btc_send_task2 = 1;
+#else
 	btc_send_task = 1;
+#endif
   }
 #endif
   if (EXTI_GetITStatus(KEY_BUTTON_EXTI_LINE) != RESET)
